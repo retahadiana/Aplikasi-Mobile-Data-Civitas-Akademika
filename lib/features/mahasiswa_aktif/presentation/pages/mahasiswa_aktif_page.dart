@@ -21,7 +21,7 @@ class MahasiswaAktifPage extends ConsumerWidget {
         ),
         elevation: 0,
         backgroundColor: Colors.white,
-        foregroundColor: Colors.green[700], // Memberi aksen hijau untuk "Aktif"
+        foregroundColor: Colors.black87, // Memberi aksen  untuk "Aktif"
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),

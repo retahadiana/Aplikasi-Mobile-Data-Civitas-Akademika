@@ -12,7 +12,7 @@ class DosenPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Data Dosen'),
+        title: const Text('Data Dosen', style: TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         actions: [
           IconButton(

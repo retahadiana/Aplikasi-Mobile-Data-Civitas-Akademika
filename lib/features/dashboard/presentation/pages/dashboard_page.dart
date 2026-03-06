@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aplikasimobile/core/constants/constants.dart';
-
-// Catatan: Import di bawah ini mungkin akan merah sementara waktu
-// karena kita belum membuat file-file tersebut. Abaikan saja dulu.
 import 'package:aplikasimobile/core/widgets/widget.dart';
 import 'package:aplikasimobile/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:aplikasimobile/features/dashboard/presentation/widgets/dashboard_widget.dart';
