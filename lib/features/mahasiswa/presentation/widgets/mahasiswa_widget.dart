@@ -3,121 +3,201 @@ import 'package:aplikasimobile/features/mahasiswa/data/models/mahasiswa_model.da
 
 class ModernMahasiswaCard extends StatelessWidget {
   final MahasiswaModel mahasiswa;
+  final VoidCallback? onTap;
 
-  const ModernMahasiswaCard({Key? key, required this.mahasiswa}) : super(key: key);
+  const ModernMahasiswaCard({
+    Key? key,
+    required this.mahasiswa,
+    this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final isAktif = mahasiswa.status == 'Aktif';
 
+    // Mengambil warna dari palet Dashboard (Biru untuk aktif, Abu/Oranye untuk non-aktif)
+    final Color primaryColor = isAktif ? const Color(0xFF4facfe) : Colors.orange[400]!;
+    final Color secondaryColor = isAktif ? const Color(0xFF00f2fe) : Colors.orange[300]!;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 15,
-            offset: const Offset(0, 5),
+            offset: const Offset(0, 8),
           ),
         ],
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap ?? () {},
+          borderRadius: BorderRadius.circular(16),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Avatar Inisial
+                // Aksen garis vertikal di sebelah kiri
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 6,
                   decoration: BoxDecoration(
-                    color: isAktif ? Colors.blue.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Center(
-                    child: Text(
-                      mahasiswa.nama.substring(0, 1).toUpperCase(),
-                      style: TextStyle(
-                        color: isAktif ? Colors.blue[700] : Colors.orange[700],
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [primaryColor, secondaryColor],
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      bottomLeft: Radius.circular(16),
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                // Info Utama
+
+                // Konten Utama Kartu
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        mahasiswa.nama,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'NIM: ${mahasiswa.nim}',
-                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
-                      ),
-                    ],
-                  ),
-                ),
-                // Badge Status
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: isAktif ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    mahasiswa.status,
-                    style: TextStyle(
-                      color: isAktif ? Colors.green[700] : Colors.orange[700],
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // Avatar Inisial dengan Gradient
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: isAktif
+                                      ? [primaryColor.withOpacity(0.2), secondaryColor.withOpacity(0.2)]
+                                      : [Colors.grey[200]!, Colors.grey[300]!],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  mahasiswa.nama.substring(0, 1).toUpperCase(),
+                                  style: TextStyle(
+                                    color: isAktif ? primaryColor : Colors.grey[700],
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+
+                            // Info Utama (Nama & NIM)
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    mahasiswa.nama,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: -0.3,
+                                      color: Colors.black87,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'NIM: ${mahasiswa.nim}',
+                                    style: TextStyle(
+                                      color: Colors.grey[500],
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Badge Status
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: isAktif ? primaryColor.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isAktif ? primaryColor.withOpacity(0.2) : Colors.orange.withOpacity(0.2),
+                                ),
+                              ),
+                              child: Text(
+                                mahasiswa.status,
+                                style: TextStyle(
+                                  color: isAktif ? primaryColor : Colors.orange[700],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                          child: Divider(height: 1, thickness: 1, color: Color(0xFFF0F0F0)),
+                        ),
+
+                        // Info Tambahan (Program Studi & IPK)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Icon(Icons.school_rounded, size: 16, color: Colors.grey[400]),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      '${mahasiswa.programStudi} • Angkatan ${mahasiswa.angkatan}',
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFFB300)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  mahasiswa.ipk.toStringAsFixed(2),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Divider(height: 1, thickness: 1),
-            ),
-            // Info Tambahan (Program Studi & IPK)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.school_outlined, size: 16, color: Colors.grey[500]),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${mahasiswa.programStudi} • Angkatan ${mahasiswa.angkatan}',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.star_rounded, size: 16, color: Colors.amber),
-                    const SizedBox(width: 4),
-                    Text(
-                      mahasiswa.ipk.toStringAsFixed(2),
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
