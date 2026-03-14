@@ -7,44 +7,54 @@ class ProfileMenuItem extends StatelessWidget {
   final bool isDestructive;
 
   const ProfileMenuItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.onTap,
     this.isDestructive = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? Colors.red[400] : Colors.grey[700];
-    final iconBgColor = isDestructive ? Colors.red.withOpacity(0.1) : Colors.blue.withOpacity(0.1);
-    final iconColor = isDestructive ? Colors.red[600] : Colors.blue[600];
+    final Color textColor = isDestructive ? const Color(0xFFCC3D3D) : const Color(0xFF2B3748);
+    final Color iconBgColor = isDestructive
+        ? const Color(0xFFFFEDEE)
+        : const Color(0xFFEFF5FF);
+    final Color iconColor = isDestructive
+        ? const Color(0xFFCC3D3D)
+        : const Color(0xFF2B7BE8);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE8EDF3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         leading: Container(
-          padding: const EdgeInsets.all(10),
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(color: iconBgColor, borderRadius: BorderRadius.circular(12)),
-          child: Icon(icon, color: iconColor, size: 22),
+          child: Icon(icon, color: iconColor, size: 20),
         ),
         title: Text(
           title,
-          style: TextStyle(fontWeight: FontWeight.w600, color: color, fontSize: 15),
+          style: TextStyle(fontWeight: FontWeight.w600, color: textColor, fontSize: 15),
         ),
-        trailing: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey[400]),
+        trailing: const Icon(
+          Icons.chevron_right_rounded,
+          size: 22,
+          color: Color(0xFF9AA6B2),
+        ),
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),

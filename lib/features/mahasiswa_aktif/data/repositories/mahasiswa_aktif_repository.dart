@@ -1,16 +1,15 @@
 import 'dart:convert';
 
-import 'package:aplikasimobile/features/mahasiswa/data/models/mahasiswa_model.dart';
+import 'package:aplikasimobile/features/mahasiswa_aktif/data/models/mahasiswa_aktif_model.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 
-class MahasiswaRepository {
-  static const String _baseUrl = 'https://jsonplaceholder.typicode.com/comments';
-  static const int _limit = 30;
+class MahasiswaAktifRepository {
+  static const String _baseUrl = 'https://jsonplaceholder.typicode.com/posts';
   static const Duration _cacheDuration = Duration(minutes: 5);
-  static List<MahasiswaModel>? _cachedMahasiswa;
+  static List<MahasiswaAktifModel>? _cachedMahasiswaAktif;
   static DateTime? _lastFetchAt;
-  static Future<List<MahasiswaModel>>? _ongoingRequest;
+  static Future<List<MahasiswaAktifModel>>? _ongoingRequest;
   final Dio _dio = Dio(
     BaseOptions(
       connectTimeout: const Duration(seconds: 4),
@@ -19,9 +18,9 @@ class MahasiswaRepository {
     ),
   );
 
-  Future<List<MahasiswaModel>> getMahasiswaList({bool forceRefresh = false}) async {
+  Future<List<MahasiswaAktifModel>> getMahasiswaAktifList({bool forceRefresh = false}) async {
     if (!forceRefresh && _hasFreshCache) {
-      return _cachedMahasiswa!;
+      return _cachedMahasiswaAktif!;
     }
 
     final ongoingRequest = _ongoingRequest;
@@ -29,12 +28,12 @@ class MahasiswaRepository {
       return ongoingRequest;
     }
 
-    final request = _fetchMahasiswaList();
+    final request = _fetchMahasiswaAktifList();
     _ongoingRequest = request;
 
     try {
       final result = await request;
-      _cachedMahasiswa = result;
+      _cachedMahasiswaAktif = result;
       _lastFetchAt = DateTime.now();
       return result;
     } finally {
@@ -46,19 +45,18 @@ class MahasiswaRepository {
 
   bool get _hasFreshCache {
     final lastFetchAt = _lastFetchAt;
-    final cachedMahasiswa = _cachedMahasiswa;
-    if (lastFetchAt == null || cachedMahasiswa == null) {
+    final cachedMahasiswaAktif = _cachedMahasiswaAktif;
+    if (lastFetchAt == null || cachedMahasiswaAktif == null) {
       return false;
     }
 
     return DateTime.now().difference(lastFetchAt) < _cacheDuration;
   }
 
-  Future<List<MahasiswaModel>> _fetchMahasiswaList() async {
+  Future<List<MahasiswaAktifModel>> _fetchMahasiswaAktifList() async {
     try {
       final response = await _dio.get<dynamic>(
         _baseUrl,
-        queryParameters: const <String, dynamic>{'_limit': _limit},
         options: Options(
           headers: const <String, String>{'Accept': 'application/json'},
         ),
@@ -67,7 +65,7 @@ class MahasiswaRepository {
       if (response.statusCode == 200 && response.data is List<dynamic>) {
         final List<dynamic> data = response.data as List<dynamic>;
         return data
-            .map((json) => MahasiswaModel.fromJson(json as Map<String, dynamic>))
+            .map((json) => MahasiswaAktifModel.fromJson(json as Map<String, dynamic>))
             .toList();
       }
     } on DioException {
@@ -76,20 +74,18 @@ class MahasiswaRepository {
 
     final response = await http
         .get(
-          Uri.parse(_baseUrl).replace(
-            queryParameters: const <String, String>{'_limit': '30'},
-          ),
+          Uri.parse(_baseUrl),
           headers: const {'Accept': 'application/json'},
         )
-        .timeout(const Duration(seconds: 8));
+        .timeout(const Duration(seconds: 5));
 
     if (response.statusCode != 200) {
-      throw Exception('Gagal memuat data mahasiswa: ${response.statusCode}');
+      throw Exception('Gagal memuat data mahasiswa aktif: ${response.statusCode}');
     }
 
     final List<dynamic> data = jsonDecode(response.body) as List<dynamic>;
     return data
-        .map((json) => MahasiswaModel.fromJson(json as Map<String, dynamic>))
+        .map((json) => MahasiswaAktifModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 }

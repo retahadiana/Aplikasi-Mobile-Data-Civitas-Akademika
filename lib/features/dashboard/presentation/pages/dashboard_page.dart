@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aplikasimobile/core/constants/constants.dart';
-import 'package:aplikasimobile/core/widgets/widget.dart';
 import 'package:aplikasimobile/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:aplikasimobile/features/dashboard/presentation/widgets/dashboard_widget.dart';
 import 'package:aplikasimobile/features/mahasiswa/presentation/pages/mahasiswa_page.dart';
@@ -10,7 +9,7 @@ import 'package:aplikasimobile/features/dosen/presentation/pages/dosen_page.dart
 import 'package:aplikasimobile/features/profile/presentation/pages/profile_page.dart';
 
 class DashboardPage extends ConsumerWidget {
-  const DashboardPage({Key? key}) : super(key: key);
+  const DashboardPage({super.key});
 
   // get icon
   IconData _getIconForStat(String title) {
@@ -32,9 +31,10 @@ class DashboardPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dashboardState = ref.watch(dashboardNotifierProvider);
-    final selectedIndex = ref.watch(selectedStatIndexProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF4F6FA),
       body: dashboardState.when(
         loading: () => const Center(
           child: CircularProgressIndicator(),
@@ -46,225 +46,203 @@ class DashboardPage extends ConsumerWidget {
             onRefresh: () async {
               ref.invalidate(dashboardNotifierProvider);
             },
-            child: CustomScrollView(
-              slivers: [
-                // Modern Header with Gradient
-                SliverToBoxAdapter(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Theme.of(context).primaryColor,
-                          Theme.of(context).primaryColor.withBlue(220),
-                        ],
-                      ),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(32),
-                        bottomRight: Radius.circular(32),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(
-                            context,
-                          ).primaryColor.withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
+            child: ListView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              padding: const EdgeInsets.only(bottom: 24),
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        theme.primaryColor,
+                        theme.primaryColor.withBlue(220),
                       ],
                     ),
-                    child: SafeArea(
-                      bottom: false,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Selamat Datang! 👋',
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.9),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(28),
+                      bottomRight: Radius.circular(28),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.primaryColor.withValues(alpha: 0.28),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Selamat datang',
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(alpha: 0.9),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        dashboardData.userName,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: -0.5,
-                                        ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      dashboardData.userName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: -0.6,
                                       ),
-                                    ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.35),
                                   ),
                                 ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: Colors.white.withOpacity(0.3),
-                                      width: 2,
-                                    ),
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.notifications_none_rounded,
+                                    color: Colors.white,
                                   ),
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      Icons.notifications_outlined,
-                                      color: Colors.white,
-                                      size: 26,
-                                    ),
-                                    onPressed: () {},
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.16),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.24),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.schedule_rounded,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Update: ${_formatDate(dashboardData.lastUpdate)}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 20),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.2),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today_rounded,
-                                    color: Colors.white.withOpacity(0.9),
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    'Update: ${_formatDate(dashboardData.lastUpdate)}',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.9),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-                // Stats Section with Modern Cards
-                SliverPadding(
-                  padding: const EdgeInsets.all(24),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Statistik',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            TextButton.icon(
-                              onPressed: () {
-                                ref.invalidate(dashboardNotifierProvider);
-                              },
-                              icon: const Icon(Icons.refresh_rounded, size: 18),
-                              label: const Text('Refresh'),
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                              ),
-                            ),
-                          ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Statistik',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF202734),
                         ),
-                        const SizedBox(height: 20),
-                        GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 16,
-                                mainAxisSpacing: 16,
-                                childAspectRatio: 1.1,
-                              ),
-                          itemCount: dashboardData.stats.length,
-                          itemBuilder: (context, index) {
-                            final stat = dashboardData.stats[index];
-                            return ModernStatCard(
-                              stats: stat,
-                              icon: _getIconForStat(stat.title),
-                              gradientColors:
-                                  AppConstants.dashboardGradients[index %
-                                      AppConstants.dashboardGradients.length],
-                              isSelected: selectedIndex == index,
-                              onTap: () {
-                                ref
-                                        .read(
-                                          selectedStatIndexProvider.notifier,
-                                        )
-                                        .state =
-                                    index;
-
-                                final statTitle = stat.title;
-                                Widget? targetPage;
-
-                                switch (statTitle) {
-                                  case 'Total Mahasiswa':
-                                    targetPage = const MahasiswaPage();
-                                    break;
-                                  case 'Mahasiswa Aktif':
-                                    targetPage = const MahasiswaAktifPage();
-                                    break;
-                                  case 'Dosen':
-                                    targetPage = const DosenPage();
-                                    break;
-                                  case 'Profile':
-                                    targetPage = const ProfilePage();
-                                    break;
-                                }
-
-                                if (targetPage != null) {
-                                  Navigator.push(
-                                    context,
-                                    _createRoute(targetPage),
-                                  );
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          ref.invalidate(dashboardNotifierProvider);
+                        },
+                        icon: const Icon(Icons.refresh_rounded, size: 18),
+                        label: const Text('Refresh'),
+                      ),
+                    ],
                   ),
                 ),
-                const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final crossAxisCount = constraints.maxWidth > 650 ? 3 : 2;
+
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 14,
+                          childAspectRatio: 1.05,
+                        ),
+                        itemCount: dashboardData.stats.length,
+                        itemBuilder: (context, index) {
+                          final stat = dashboardData.stats[index];
+                          return ModernStatCard(
+                            stats: stat,
+                            icon: _getIconForStat(stat.title),
+                            gradientColors: AppConstants.dashboardGradients[
+                                index % AppConstants.dashboardGradients.length],
+                            onTap: () {
+                              ref
+                                  .read(selectedStatIndexProvider.notifier)
+                                  .state = index;
+
+                              final statTitle = stat.title;
+                              Widget? targetPage;
+
+                              switch (statTitle) {
+                                case 'Total Mahasiswa':
+                                  targetPage = const MahasiswaPage();
+                                  break;
+                                case 'Mahasiswa Aktif':
+                                  targetPage = const MahasiswaAktifPage();
+                                  break;
+                                case 'Dosen':
+                                  targetPage = const DosenPage();
+                                  break;
+                                case 'Profile':
+                                  targetPage = const ProfilePage();
+                                  break;
+                              }
+
+                              if (targetPage != null) {
+                                Navigator.push(context, _createRoute(targetPage));
+                              }
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           );

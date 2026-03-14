@@ -6,17 +6,15 @@ class ModernStatCard extends StatefulWidget {
   final DashboardStats stats;
   final IconData icon;
   final List<Color> gradientColors;
-  final bool isSelected;
   final VoidCallback? onTap;
 
   const ModernStatCard({
-    Key? key,
+    super.key,
     required this.stats,
     required this.icon,
     required this.gradientColors,
-    this.isSelected = false,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<ModernStatCard> createState() => _ModernStatCardState();
@@ -26,7 +24,6 @@ class _ModernStatCardState extends State<ModernStatCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  bool isPressed = false;
 
   @override
   void initState() {
@@ -51,16 +48,13 @@ class _ModernStatCardState extends State<ModernStatCard>
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (_) {
-        setState(() => isPressed = true);
         _controller.forward();
       },
       onTapUp: (_) {
-        setState(() => isPressed = false);
         _controller.reverse();
         widget.onTap?.call();
       },
       onTapCancel: () {
-        setState(() => isPressed = false);
         _controller.reverse();
       },
       child: ScaleTransition(
@@ -75,9 +69,9 @@ class _ModernStatCardState extends State<ModernStatCard>
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: widget.gradientColors[0].withOpacity(0.3),
-                blurRadius: widget.isSelected ? 20 : 12,
-                offset: Offset(0, widget.isSelected ? 8 : 4),
+                color: widget.gradientColors[0].withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
@@ -92,7 +86,7 @@ class _ModernStatCardState extends State<ModernStatCard>
                   height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                   ),
                 ),
               ),
@@ -104,7 +98,7 @@ class _ModernStatCardState extends State<ModernStatCard>
                   height: 60,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                   ),
                 ),
               ),
@@ -114,36 +108,79 @@ class _ModernStatCardState extends State<ModernStatCard>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Icon
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(widget.icon, color: Colors.white, size: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(9),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(widget.icon, color: Colors.white, size: 20),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                widget.stats.isIncrease
+                                    ? Icons.trending_up_rounded
+                                    : Icons.trending_down_rounded,
+                                size: 12,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                '${widget.stats.percentage.toStringAsFixed(1)}%',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                     const Spacer(),
-                    // Value
                     Text(
                       widget.stats.value,
                       style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w700,
                         color: Colors.white,
-                        letterSpacing: -0.5,
+                        letterSpacing: -0.8,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    // Title
+                    const SizedBox(height: 2),
                     Text(
                       widget.stats.title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 13,
-                        color: Colors.white.withOpacity(0.9),
-                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
                       ),
                       maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.stats.subtitle,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.white.withValues(alpha: 0.85),
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],

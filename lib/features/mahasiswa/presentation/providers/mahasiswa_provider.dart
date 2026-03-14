@@ -24,11 +24,17 @@ class MahasiswaNotifier extends StateNotifier<AsyncValue<List<MahasiswaModel>>> 
   }
 
   Future<void> refresh() async {
-    await loadMahasiswaList();
+    state = const AsyncValue.loading();
+    try {
+      final data = await _repository.getMahasiswaList(forceRefresh: true);
+      state = AsyncValue.data(data);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
   }
 }
 
-final mahasiswaNotifierProvider = StateNotifierProvider.autoDispose<
+final mahasiswaNotifierProvider = StateNotifierProvider<
     MahasiswaNotifier, AsyncValue<List<MahasiswaModel>>>((ref) {
   final repository = ref.watch(mahasiswaRepositoryProvider);
   return MahasiswaNotifier(repository);

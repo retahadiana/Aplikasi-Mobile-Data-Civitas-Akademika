@@ -25,15 +25,10 @@ class DosenPage extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: ${error.toString()}')),
         data: (dosenList) {
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(dosenNotifierProvider),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: dosenList.length,
-              itemBuilder: (context, index) {
-                return ModernDosenCard(dosen: dosenList[index]);
-              },
-            ),
+          return DosenListView(
+            dosenList: dosenList,
+            onRefresh: () => ref.invalidate(dosenNotifierProvider),
+            useModernCard: true,
           );
         },
       ),

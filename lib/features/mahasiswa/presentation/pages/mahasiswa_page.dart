@@ -47,7 +47,7 @@ class MahasiswaPage extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.15),
+                        color: Colors.blue.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -64,12 +64,12 @@ class MahasiswaPage extends ConsumerWidget {
               ),
 
               // Garis batas tipis
-              Container(height: 1, color: Colors.grey.withOpacity(0.2)),
+              Container(height: 1, color: Colors.grey.withValues(alpha: 0.2)),
 
               // DAFTAR MAHASISWA
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: () async => ref.invalidate(mahasiswaNotifierProvider),
+                  onRefresh: () => ref.read(mahasiswaNotifierProvider.notifier).refresh(),
                   child: ListView.builder(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(20),
@@ -79,7 +79,7 @@ class MahasiswaPage extends ConsumerWidget {
                         mahasiswa: mahasiswaList[index],
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Memilih ${mahasiswaList[index].nama}')),
+                            SnackBar(content: Text('Memilih ${mahasiswaList[index].name}')),
                           );
                         },
                       );
