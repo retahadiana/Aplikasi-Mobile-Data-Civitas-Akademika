@@ -109,4 +109,67 @@ class LocalStorageService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
   }
+
+
+
+
+  // --- Bagian List Mahasiswa yang Disimpan --------------------------
+  static const String _savedMahasiswaKey = 'saved_mahasiswa';
+
+  /// Tambah mahasiswa ke list lokal
+  Future<void> addMahasiswaToSavedList({required String id, required String name}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final rawList = prefs.getStringList(_savedMahasiswaKey) ?? [];
+
+    // Cek duplikasi ID
+    final isDuplicate = rawList.any((item) {
+      final map = jsonDecode(item) as Map<String, dynamic>;
+      return map['id'] == id;
+    });
+
+    if (isDuplicate) return;
+
+    final newData = jsonEncode({
+      'id': id,
+      'name': name,
+      'saved_at': DateTime.now().toIso8601String(),
+    });
+
+    rawList.add(newData);
+    await prefs.setStringList(_savedMahasiswaKey, rawList);
+  }
+
+  /// Ambil semua mahasiswa yang tersimpan
+  Future<List<Map<String, String>>> getSavedMahasiswa() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rawList = prefs.getStringList(_savedMahasiswaKey) ?? [];
+
+    return rawList.map((item) {
+      final map = jsonDecode(item) as Map<String, dynamic>;
+      return {
+        'id': (map['id'] ?? '').toString(),
+        'name': (map['name'] ?? '').toString(),
+        'saved_at': (map['saved_at'] ?? '').toString(),
+      };
+    }).toList();
+  }
+
+  /// Hapus mahasiswa tertentu
+  Future<void> removeSavedMahasiswa(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final rawList = prefs.getStringList(_savedMahasiswaKey) ?? [];
+
+    rawList.removeWhere((item) {
+      final map = jsonDecode(item) as Map<String, dynamic>;
+      return map['id'] == id;
+    });
+
+    await prefs.setStringList(_savedMahasiswaKey, rawList);
+  }
+
+  /// Hapus semua mahasiswa tersimpan
+  Future<void> clearSavedMahasiswa() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_savedMahasiswaKey);
+  }
 }

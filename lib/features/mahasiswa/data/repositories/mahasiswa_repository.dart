@@ -1,95 +1,24 @@
-import 'dart:convert';
-
+import 'package:aplikasimobile/core/network/dio_client.dart';
 import 'package:aplikasimobile/features/mahasiswa/data/models/mahasiswa_model.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 
 class MahasiswaRepository {
-  static const String _baseUrl = 'https://jsonplaceholder.typicode.com/comments';
-  static const int _limit = 30;
-  static const Duration _cacheDuration = Duration(minutes: 5);
-  static List<MahasiswaModel>? _cachedMahasiswa;
-  static DateTime? _lastFetchAt;
-  static Future<List<MahasiswaModel>>? _ongoingRequest;
-  final Dio _dio = Dio(
-    BaseOptions(
-      connectTimeout: const Duration(seconds: 4),
-      receiveTimeout: const Duration(seconds: 5),
-      sendTimeout: const Duration(seconds: 4),
-    ),
-  );
+  final DioClient _dioClient;
 
-  Future<List<MahasiswaModel>> getMahasiswaList({bool forceRefresh = false}) async {
-    if (!forceRefresh && _hasFreshCache) {
-      return _cachedMahasiswa!;
-    }
+  MahasiswaRepository({DioClient? dioClient})
+      : _dioClient = dioClient ?? DioClient();
 
-    final ongoingRequest = _ongoingRequest;
-    if (!forceRefresh && ongoingRequest != null) {
-      return ongoingRequest;
-    }
-
-    final request = _fetchMahasiswaList();
-    _ongoingRequest = request;
-
+  Future<List<MahasiswaModel>> getMahasiswaList() async {
     try {
-      final result = await request;
-      _cachedMahasiswa = result;
-      _lastFetchAt = DateTime.now();
-      return result;
-    } finally {
-      if (identical(_ongoingRequest, request)) {
-        _ongoingRequest = null;
-      }
-    }
-  }
-
-  bool get _hasFreshCache {
-    final lastFetchAt = _lastFetchAt;
-    final cachedMahasiswa = _cachedMahasiswa;
-    if (lastFetchAt == null || cachedMahasiswa == null) {
-      return false;
-    }
-
-    return DateTime.now().difference(lastFetchAt) < _cacheDuration;
-  }
-
-  Future<List<MahasiswaModel>> _fetchMahasiswaList() async {
-    try {
-      final response = await _dio.get<dynamic>(
-        _baseUrl,
-        queryParameters: const <String, dynamic>{'_limit': _limit},
-        options: Options(
-          headers: const <String, String>{'Accept': 'application/json'},
-        ),
+      // Menggunakan endpoint /comments sesuai Modul 5
+      final Response response = await _dioClient.dio.get(
+        '/comments',
+        queryParameters: {'_limit': 30},
       );
-
-      if (response.statusCode == 200 && response.data is List<dynamic>) {
-        final List<dynamic> data = response.data as List<dynamic>;
-        return data
-            .map((json) => MahasiswaModel.fromJson(json as Map<String, dynamic>))
-            .toList();
-      }
-    } on DioException {
-      // Fallback ke http jika request via dio gagal.
+      final List<dynamic> data = response.data;
+      return data.map((json) => MahasiswaModel.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw Exception('Gagal memuat data mahasiswa: ${e.response?.statusCode} - ${e.message}');
     }
-
-    final response = await http
-        .get(
-          Uri.parse(_baseUrl).replace(
-            queryParameters: const <String, String>{'_limit': '30'},
-          ),
-          headers: const {'Accept': 'application/json'},
-        )
-        .timeout(const Duration(seconds: 8));
-
-    if (response.statusCode != 200) {
-      throw Exception('Gagal memuat data mahasiswa: ${response.statusCode}');
-    }
-
-    final List<dynamic> data = jsonDecode(response.body) as List<dynamic>;
-    return data
-        .map((json) => MahasiswaModel.fromJson(json as Map<String, dynamic>))
-        .toList();
   }
 }
